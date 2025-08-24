@@ -1,13 +1,7 @@
-#include <iostream>
-#include <thread>
-#include <string>
-#include <unistd.h>
-#include <arpa/inet.h>
-#include <cstring> // Required for memset
+#include <bits/stdc++.h>
 
 using namespace std;
 
-// This function runs in a separate thread to receive messages from the server
 void receiveMessages(int socket) {
     char buffer[1024];
     while (true) {
@@ -16,11 +10,11 @@ void receiveMessages(int socket) {
         if (bytes_received <= 0) {
             cout << "\n[Client] Disconnected from server." << endl;
             close(socket);
-            exit(0); // Exit the client program if server connection is lost
+            exit(0); 
         }
         cout << "\n" << buffer << endl;
-        cout << "> "; // Re-display prompt
-        cout.flush(); // Ensure the prompt is displayed immediately
+        cout << "> "; 
+        cout.flush(); 
     }
 }
 
@@ -33,8 +27,8 @@ int main() {
 
     sockaddr_in serverAddr;
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(8081); // Must match the server's port
-    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // Connect to localhost
+    serverAddr.sin_port = htons(8081); 
+    serverAddr.sin_addr.s_addr = inet_addr("127.0.0.1"); 
 
     cout << "[Client] Connecting to server on port 8081..." << endl;
     if (connect(clientSocket, (sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
@@ -43,7 +37,6 @@ int main() {
     }
     cout << "[Client] Connection successful." << endl;
 
-    // --- Handshake Protocol ---
     string choice, username, password;
     cout << "Enter 'login' or 'register': ";
     cin >> choice;
@@ -57,18 +50,15 @@ int main() {
     cin >> password;
     send(clientSocket, password.c_str(), password.length(), 0);
 
-    // Start a thread to listen for incoming messages
     thread(receiveMessages, clientSocket).detach();
 
-    // Give a moment for the welcome message to arrive
     this_thread::sleep_for(chrono::milliseconds(100));
 
-    // --- Main Message Loop ---
     cout << "\n--- Chat started ---" << endl;
     cout << "Type '/msg <user> <message>' for private messages." << endl;
     
     string msg;
-    cin.ignore(); // Consume the newline character left by cin
+    cin.ignore(); 
     
     while (true) {
         cout << "> ";
